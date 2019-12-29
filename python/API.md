@@ -16,7 +16,7 @@ As long as you have the username, all images can be retrieved by this link.
 ~~~ts
 hasMore: boolean,
 nextOffset: number,
-results: [],
+results: [], // fixed 24 images per requests
 comments: {}
 ~~~
 
