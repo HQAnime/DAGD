@@ -9,6 +9,17 @@ if len(sys.argv) < 2:
 username = sys.argv[1]
 stop = False
 offset = 0
+s = requests.Session()
+
+if len(sys.argv) == 4:
+    # it comes with username and password
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+    payload = { 'username': sys.argv[2], 'password': sys.argv[3], 'remember': 'on', 'challenge': 0, 'referer': 'https://www.deviantart.com/', 'csrf_token': 'XPnfEonyYbhjcFvB.q39n6v.R3mJwhoRPQJVieydoFspqZQZlnYhz-TV7UA_915TRUs' }
+    r = s.post('https://www.deviantart.com/_sisu/do/signin', data=payload, headers=headers)
+    if r.status_code != 301:
+        with open('403.html', 'wb') as handler:
+            handler.write(r.content)
+            print('request failed')
 
 def image_link(uri, token):
     '''
@@ -25,7 +36,7 @@ def image_filename(uri, name):
     return '{}.{}'.format(name, extension)
 
 while not stop:
-    r = requests.get('https://www.deviantart.com/_napi/da-user-profile/api/gallery/contents?username={}&offset={}&limit=24&all_folder=true&mode=newest'.format(username, offset))
+    r = s.get('https://www.deviantart.com/_napi/da-user-profile/api/gallery/contents?username={}&offset={}&limit=24&all_folder=true&mode=newest'.format(username, offset))
     if r.status_code != 200:
         # quit if http request failed
         break
