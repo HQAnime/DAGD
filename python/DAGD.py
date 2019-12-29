@@ -36,13 +36,17 @@ def image_link(media):
     name = media['prettyName']
 
     # get fullview
-    fullview = ''
+    fullview = None
     for t in media['types']:
         if t['t'] == 'fullview':
-            fullview = t['c']
-            fullview = fullview.replace('<prettyName>', name)
+            if 'c' in t:
+                fullview = t['c']
+                fullview = fullview.replace('<prettyName>', name)
+            else:
+                break
 
-    if fullview != '':
+    print(fullview)
+    if fullview != None:
         return '{}/{}?token={}'.format(uri, fullview, token)
     else:
         return '{}?token={}'.format(uri, token)
@@ -69,30 +73,26 @@ while not stop:
     if json['hasMore'] == False:
         break
 
-    try:
-        json = json['results']
-        for result in json:
-            media = result['deviation']['media']
-            website_link = result['deviation']['url']
-            base_uri = media['baseUri']
-            token = media['token']
+    json = json['results']
+    for result in json:
+        media = result['deviation']['media']
+        website_link = result['deviation']['url']
+        base_uri = media['baseUri']
+        token = media['token']
 
-            img_url = image_link(media)
-            img_name = FOLDER_NAME + image_filename(base_uri, website_link)
-            print(img_url)
-            print(img_name)
+        img_url = image_link(media)
+        img_name = FOLDER_NAME + image_filename(base_uri, website_link)
+        print(img_url)
+        print(img_name)
 
-            if (os.path.exists(img_name)):
-                continue
+        if (os.path.exists(img_name)):
+            continue
 
-            # use cookie to get forbidden items
-            image = requests.get(img_url).content
-            with open(img_name, 'wb') as handler:
-                handler.write(image)
-                print(img_name + ' has been downloaded')
-    except Exception:
-        print('Failed to download image')
-        pass
+        # use cookie to get forbidden items
+        image = requests.get(img_url).content
+        with open(img_name, 'wb') as handler:
+            handler.write(image)
+            print(img_name + ' has been downloaded')
     
     offset += 24
     # rest a little bit
