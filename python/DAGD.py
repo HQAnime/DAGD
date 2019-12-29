@@ -30,7 +30,11 @@ while not stop:
         # quit if http request failed
         break
 
+    print('offset - {}'.format(offset))
     json = r.json()
+    if json['hasMore'] == False:
+        break
+
     try:
         json = json['results']
         for result in json:
@@ -40,7 +44,7 @@ while not stop:
             token = media['token']
 
             img_url = image_link(base_uri, token)
-            img_name = image_filename(base_uri, website_link)
+            img_name = 'gallery' + image_filename(base_uri, website_link)
 
             if (os.path.exists(img_name)):
                 continue
