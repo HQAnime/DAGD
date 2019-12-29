@@ -1,6 +1,7 @@
 import sys, time, os
 import requests
 import random
+from my_cookie import cookie
 
 if len(sys.argv) < 2:
     print('error: no username')
@@ -9,17 +10,16 @@ if len(sys.argv) < 2:
 username = sys.argv[1]
 stop = False
 offset = 0
-s = requests.Session()
 
-if len(sys.argv) == 4:
-    # it comes with username and password
-    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
-    payload = { 'username': sys.argv[2], 'password': sys.argv[3], 'remember': 'on', 'challenge': 0, 'referer': 'https://www.deviantart.com/', 'csrf_token': 'XPnfEonyYbhjcFvB.q39n6v.R3mJwhoRPQJVieydoFspqZQZlnYhz-TV7UA_915TRUs' }
-    r = s.post('https://www.deviantart.com/_sisu/do/signin', data=payload, headers=headers)
-    if r.status_code != 301:
-        with open('403.html', 'wb') as handler:
-            handler.write(r.content)
-            print('request failed')
+def setup_cookie(cookie):
+    c = {}
+    
+    sessions = cookie.split('; ')
+    for s in sessions:
+        o = s.split('=')
+        c[o[0]] = o[1]
+    
+    return c
 
 def image_link(uri, token):
     '''
@@ -35,8 +35,10 @@ def image_filename(uri, name):
     extension = uri.split('.')[-1]
     return '{}.{}'.format(name, extension)
 
+da_cookie = setup_cookie(cookie)
+print(da_cookie)
 while not stop:
-    r = s.get('https://www.deviantart.com/_napi/da-user-profile/api/gallery/contents?username={}&offset={}&limit=24&all_folder=true&mode=newest'.format(username, offset))
+    r = requests.get('https://www.deviantart.com/_napi/da-user-profile/api/gallery/contents?username={}&offset={}&limit=24&all_folder=true&mode=newest'.format(username, offset), cookies=da_cookie)
     if r.status_code != 200:
         # quit if http request failed
         break

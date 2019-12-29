@@ -1,2 +1,4 @@
-
+# python
 *.html
+__pycache__
+python/my_cookie.py
