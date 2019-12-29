@@ -38,6 +38,13 @@ media: {}
 baseUri: string
 prettyName: string
 token: [string]
+types: []
 ~~~
 
-The goal is to check if media exists, the download link will be `baseUri + ?token= + token`. Any token would work.
+###### types
+~~~ts
+t: string
+c: string
+~~~
+
+The goal is to check if media exists, the download link will be `baseUri + ?token= + token` or `baseUri + / + c + ?token= + token`
